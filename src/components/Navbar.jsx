@@ -10,7 +10,9 @@ import { auth, provider, db, timestamp, app } from "../firebase.js";
 function Navbar() {
   const handleLogin = async () => {
     const response = await signInWithPopup(auth, provider);
+    console.log(response);
   };
+  
   return (
     <div className="bg-yt-black h-14 flex items-center pl-4 pr-5 justify-between fixed w-full z-10 ">
       <div className="flex justify-between items-center">
