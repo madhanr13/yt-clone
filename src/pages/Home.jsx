@@ -2,17 +2,31 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { CategoryItems } from "../static/data.jsx";
 import { collection, onSnapshot, query } from "firebase/firestore";
-import { db } from "../firebase.js";
+import { auth,db } from "../firebase.js";
 import { Link } from "react-router-dom";
 import Video from "../components/Video.jsx";
+import { onAuthStateChanged } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { setUser } from "../slices/userSlice.js";
 const Home = () => {
   const [videos, setVideos] = useState([]);
+  const dispatch = useDispatch()
   useEffect(() => {
     const q = query(collection(db, "videos"));
     onSnapshot(q, (snapshot) => {
       setVideos(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
   }, []);
+  useEffect(() => {
+    onAuthStateChanged(auth,(user) => {
+      if(user){
+        dispatch(setUser(user))
+      } else {
+        dispatch(setUser(null))
+      }
+    })
+  }, [])
+  
 
   return (
     <>
@@ -34,7 +48,7 @@ const Home = () => {
           ) : (
             videos.map((video, index) => (
               <Link to={`/video/${video.id}`} key={video.id}>
-                <Video {...video}/>
+                <Video {...video} />
               </Link>
             ))
           )}

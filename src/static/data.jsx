@@ -42,6 +42,7 @@ export const SideBarItems = {
 export const CategoryItems = [
   "All",
   "Music",
+  "Cricket",
   "Mixes",
   "Silicon Valley",
   "T-Series",
@@ -49,7 +50,6 @@ export const CategoryItems = [
   "Bollywood",
   "Hollywood",
   "Sitcom",
-  "Cricket",
   "Tech",
   "Gaming",
 ];

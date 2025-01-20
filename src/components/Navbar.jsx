@@ -4,15 +4,24 @@ import { HiOutlineBars3, HiMagnifyingGlass } from "react-icons/hi2";
 import { BiVideoPlus } from "react-icons/bi";
 import { FaRegBell } from "react-icons/fa";
 import logo from "../assets/yt-logo-white.png";
-import { ProviderId, signInWithPopup } from "firebase/auth";
+import { ProviderId, signInWithPopup, signOut } from "firebase/auth";
 import { auth, provider, db, timestamp, app } from "../firebase.js";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser, getUser, logout } from "../slices/userSlice.js";
 
 function Navbar() {
+  const dispatch = useDispatch();
+  const user = useSelector(getUser);
+
   const handleLogin = async () => {
     const response = await signInWithPopup(auth, provider);
-    console.log(response);
+    dispatch(setUser(response.user));
   };
-  
+  const handleLogout = async () => {
+    dispatch(logout())
+    await signOut(auth)
+  };
+
   return (
     <div className="bg-yt-black h-14 flex items-center pl-4 pr-5 justify-between fixed w-full z-10 ">
       <div className="flex justify-between items-center">
@@ -52,12 +61,21 @@ function Navbar() {
             <FaRegBell size={20} className="text-yt-white text-center" />
           </div>
           <div className="mx-3 cursor-pointer items-center">
-            <button
-              onClick={handleLogin}
-              className="bg-yt-red py-1 px-4 text-yt-white rounded-md"
-            >
-              Signin
-            </button>
+            {!user ? (
+              <button
+                onClick={handleLogin}
+                className="bg-yt-red py-1 px-4 text-yt-white rounded-md"
+              >
+                Signin
+              </button>
+            ) : (
+              <img
+                src={user.photoURL}
+                alt={user.displayName}
+                className="object-contain rounded-full cursor-pointer w-10 h-10"
+                onClick={handleLogout}
+              />
+            )}
           </div>
         </div>
       </div>
