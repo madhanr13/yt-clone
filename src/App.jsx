@@ -3,6 +3,8 @@ import Home from "./pages/Home";
 import Video from "./pages/Video";
 import Navbar from "./components/Navbar";
 
+
+
 const App = () => {
   return (
     <BrowserRouter>

@@ -1,6 +1,6 @@
 import { addDoc, collection, doc, onSnapshot, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { auth, db, timestamp } from "../firebase";
 import { AiFillLike } from "react-icons/ai";
 import { RiShareForwardLine } from "react-icons/ri";
@@ -10,6 +10,9 @@ import { BiDislike } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, setUser } from "../slices/userSlice";
 import { onAuthStateChanged } from "firebase/auth";
+import Comments from "../components/Comments";
+import { CategoryItems } from "../static/data";
+import RecommendVideo from "../components/RecommendVideo";
 
 const Video = () => {
   const [videos, setVideos] = useState([]);
@@ -21,8 +24,9 @@ const Video = () => {
   const dispatch = useDispatch();
   const user = useSelector(getUser);
 
+
   useEffect(() => {
-    document.title = `${data?.name}   |   Youtube`;
+    document.title = `Video |   Youtube`;
     if (id) {
       const q = query(doc(db, "videos", id));
       onSnapshot(q, (snapshot) => {
@@ -49,6 +53,13 @@ const Video = () => {
     });
   }, []);
 
+   useEffect(() => {
+     const q = query(collection(db, "videos"));
+     onSnapshot(q, (snapshot) => {
+       setVideos(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+     });
+   }, []);
+
   const addComment = async (e) => {
     e.preventDefault();
     let commentData = {
@@ -59,7 +70,7 @@ const Video = () => {
     };
     if (id) {
       await addDoc(collection(db, "videos", id, "comments"), commentData);
-      setComment("")
+      setComment("");
     }
   };
 
@@ -175,6 +186,36 @@ const Video = () => {
               />
             </form>
           )}
+          <div className="mt-4">
+            {comments.map((item, index) => (
+              <Comments key={index} {...item} />
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="right px-3 overflow-y-hidden flex-[0.4]  ">
+        <div>
+          <div className="flex flex-row px-3 overflow-x-scroll relative scrollbar-hide">
+            {CategoryItems.map((item, index) => (
+              <h2
+                className="text-yt-white bg-yt-light font-normal text-sm py-2 px-4 break-keep whitespace-nowrap mr-3 cursor-pointer rounded-lg hover:bg-yt-light-black "
+                key={index}
+              >
+                {item}
+              </h2>
+            ))}
+          </div>
+        </div>
+        <div className="pt-8">
+          {videos.map((video, i) => {
+            if (video.id !== id) {
+              return (
+                <Link key={i} to={`/video/${video.id}`}>
+                  <RecommendVideo {...video} />
+                </Link>
+              );
+            }
+          })}
         </div>
       </div>
     </div>
